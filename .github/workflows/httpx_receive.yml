@@ -99,7 +99,7 @@ jobs:
           
       - name: Install httpx and dsieve
         run: |
-          go install -v github.com/projectdiscovery/httpx/cmd/httpx@latest
+          
           go install -v github.com/trickest/dsieve@latest
 
       - name: Run httpx + pre-dsieve on subdomains + final filtering
