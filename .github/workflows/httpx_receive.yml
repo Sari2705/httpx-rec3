@@ -16,6 +16,9 @@ on:
       primary_run_id:
         description: 'The run_id of the primary workflow to download artifacts from.'
         required: true
+      commit_message:
+        description: 'The commit pattern of the primary workflow'
+        required: true
       chunk_package_artifact_name:
         description: 'The name of the artifact containing all chunks and resolvers.'
         required: true
@@ -223,7 +226,7 @@ jobs:
           path: final-merged-results/
           retention-days: 1
 
-create_commit:
+  create_commit:
     name: Create Commit in store-recon (Tertiary)
     runs-on: ubuntu-latest
     needs: merge_results
@@ -247,6 +250,8 @@ create_commit:
           STORE: ${{ secrets.STORE }}
           PAT_FOR_STORE_REPO: ${{ secrets.PAT_FOR_STORE_REPO }}
           CORRELATION_ID: ${{ github.event.inputs.primary_run_id }}
+          COMMIT_MESSAGE: ${{ github.event.inputs.commit_pattern }}
+          
         run: |
           cd store-recon
           echo "Configuring git user..."
@@ -298,7 +303,7 @@ create_commit:
             
             echo "-> Staging and committing changes..."
             git add results/
-            git commit -m "feat: Automated http-multiple results from Correlation ID: ${CORRELATION_ID}"
+            git commit -m "$COMMIT_MESSAGE" "$CORRELATION_ID"
             
             echo "-> Attempting to push..."
             if git push -v origin main; then
