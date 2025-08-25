@@ -230,6 +230,7 @@ jobs:
     name: Create Commit in store-recon (Tertiary)
     runs-on: ubuntu-latest
     needs: merge_results
+    if: always() && needs.merge_results.outputs.has_results == 'true'
     steps:
       - name: Download Merged Tertiary Results Artifact
         uses: actions/download-artifact@v4
