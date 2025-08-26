@@ -178,6 +178,8 @@ jobs:
     runs-on: ubuntu-latest
     needs: resolve_tertiary_account_chunks
     if: always()
+    outputs:
+      has_results: ${{ steps.check_artifacts.outputs.found }}       
     steps:
       - name: Download all Tertiary result artifacts
         uses: actions/download-artifact@v4
@@ -185,6 +187,19 @@ jobs:
           # CHANGED: The pattern now specifically matches artifacts from the Tertiary account.
           pattern: tertiary_httpx_dsieve_*
           path: temp-artifacts/
+
+
+      - name: Check if artifacts were downloaded
+        id: check_artifacts
+        shell: bash
+        run: |
+          if [ -d "temp-artifacts" ] && [ -n "$(ls -A temp-artifacts)" ]; then
+            echo "-> Artifacts found. Proceeding with merge."
+            echo "found=true" >> $GITHUB_OUTPUT
+          else
+            echo "-> No artifacts found to merge. Skipping the rest of this job."
+            echo "found=false" >> $GITHUB_OUTPUT
+          fi          
 
       - name: DEBUG - Show Downloaded Artifact Structure
         if: always()
